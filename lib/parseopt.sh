@@ -225,6 +225,7 @@ function parseopt() {
   # todo: error codes for too few options
   # todo: make branch zero direct match, [taking primary match priority over all processing]
   # and branch 10 failed to parse.
+  # add the plus/minus status and trigger
   
   declare -A CONFIG;
 
