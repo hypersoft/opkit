@@ -1,2 +1,2 @@
-# parseopt
+# opkit
 Parameter Parsing Suite
