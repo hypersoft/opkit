@@ -59,17 +59,16 @@ function parseopt() {
   local PARAMETER=BASH_REMATCH[1] VALUE=BASH_REMATCH[2]
     
   parseopt.set $RCRD_PARAMETER [BRANCH]=0 [INDEX]=${!INDEX} [INPUT]="$1";
-
   # 1 test for long option
   [[ "$1" =~ ^--([a-zA-Z-]*[a-zA-Z])$ ]] && {
     parseopt.set $RCRD_PARAMETER [BRANCH]=1 \
       [PARAMETER]="${!PARAMETER}" [INDEX]=${!INDEX} \
         [SUBINDEX]=0 [VALUE]='' [SHORT]=0 [SIZE]=1;
-    parseopt.match "${!PARAMETER}" $(parseopt.get $PO_STATE LONG) || return 1;
-    parseopt.match "${!PARAMETER}" $(parseopt.get $PO_STATE SETTINGS) && {
-      parseopt.set $RCRD_PARAMETER [VALUE]="$2" [SIZE]=2;
-      let $INDEX++;
-    };
+    parseopt.match "${!PARAMETER}" $(parseopt.get $PO_STATE LONG) || return 11;
+#    parseopt.match "${!PARAMETER}" $(parseopt.get $PO_STATE SETTINGS) && {
+#      parseopt.set $RCRD_PARAMETER [VALUE]="$2" [SIZE]=2;
+#      let $INDEX++;
+#    };
     let $INDEX++;
     return 0;
   }
@@ -79,8 +78,8 @@ function parseopt() {
     parseopt.set $RCRD_PARAMETER [BRANCH]=2 \
       [PARAMETER]="${!PARAMETER}" [INDEX]=${!INDEX} \
         [SUBINDEX]=0 [VALUE]="$2" [SHORT]=0 [SIZE]=2;
-    parseopt.match "${!PARAMETER}" $(parseopt.get $PO_STATE LONG) || return 1;
-    parseopt.match "${!PARAMETER}" $(parseopt.get $PO_STATE SETTINGS) || return 1;
+    parseopt.match "${!PARAMETER}" $(parseopt.get $PO_STATE LONG) || return 21;
+    parseopt.match "${!PARAMETER}" $(parseopt.get $PO_STATE SETTINGS) || return 22;
     let $INDEX+=2;
     return 0;
   }
@@ -90,8 +89,8 @@ function parseopt() {
     parseopt.set $RCRD_PARAMETER [BRANCH]=3 \
       [PARAMETER]="${!PARAMETER}" [INDEX]=${!INDEX} \
         [SUBINDEX]=0 [VALUE]="${!VALUE}" [SHORT]=0 [SIZE]=1;
-    parseopt.match "${!PARAMETER}" $(parseopt.get $PO_STATE LONG) || return 1;
-    parseopt.match "${!PARAMETER}" $(parseopt.get $PO_STATE SETTINGS) || return 1;
+    parseopt.match "${!PARAMETER}" $(parseopt.get $PO_STATE LONG) || return 31;
+    parseopt.match "${!PARAMETER}" $(parseopt.get $PO_STATE SETTINGS) || return 32;
     let $INDEX++;
     return 0;
   }
@@ -101,11 +100,11 @@ function parseopt() {
     parseopt.set $RCRD_PARAMETER [BRANCH]=4 \
       [PARAMETER]="${!PARAMETER}" [INDEX]=${!INDEX} \
         [SUBINDEX]=0 [VALUE]="" [SHORT]=1 [SIZE]=1;
-    parseopt.match "${!PARAMETER}" $(parseopt.get $PO_STATE SHORT) || return 1;
-    parseopt.match "${!PARAMETER}" $(parseopt.get $PO_STATE SETTINGS) && {
-      parseopt.set $RCRD_PARAMETER [VALUE]="$2" [SIZE]=2;
-      let $INDEX++;
-    };
+    parseopt.match "${!PARAMETER}" $(parseopt.get $PO_STATE SHORT) || return 41;
+#    parseopt.match "${!PARAMETER}" $(parseopt.get $PO_STATE SETTINGS) && {
+#      parseopt.set $RCRD_PARAMETER [VALUE]="$2" [SIZE]=2;
+#      let $INDEX++;
+#    };
     let $INDEX++;
     return 0;
   }
@@ -115,8 +114,8 @@ function parseopt() {
     parseopt.set $RCRD_PARAMETER [BRANCH]=5 \
       [PARAMETER]="${!PARAMETER}" [INDEX]=${!INDEX} \
         [SUBINDEX]=0 [VALUE]="$2" [SHORT]=1 [SIZE]=2;
-    parseopt.match "${!PARAMETER}" $(parseopt.get $PO_STATE SHORT) || return 1;
-    parseopt.match "${!PARAMETER}" $(parseopt.get $PO_STATE SETTINGS) || return 1;
+    parseopt.match "${!PARAMETER}" $(parseopt.get $PO_STATE SHORT) || return 51;
+    parseopt.match "${!PARAMETER}" $(parseopt.get $PO_STATE SETTINGS) || return 52;
     let $INDEX+=2;
     return 0;
   }
@@ -126,8 +125,8 @@ function parseopt() {
     parseopt.set $RCRD_PARAMETER [BRANCH]=6 \
       [PARAMETER]="${!PARAMETER}" [INDEX]=${!INDEX} \
         [SUBINDEX]=0 [VALUE]="${!VALUE}" [SHORT]=1 [SIZE]=1;
-    parseopt.match "${!PARAMETER}" $(parseopt.get $PO_STATE SHORT) || return 1;
-    parseopt.match "${!PARAMETER}" $(parseopt.get $PO_STATE SETTINGS) || return 1;
+    parseopt.match "${!PARAMETER}" $(parseopt.get $PO_STATE SHORT) || return 61;
+    parseopt.match "${!PARAMETER}" $(parseopt.get $PO_STATE SETTINGS) || return 62;
     let $INDEX++;
     return 0;
   }
@@ -140,22 +139,21 @@ function parseopt() {
     parseopt.set $RCRD_PARAMETER [BRANCH]=7 \
       [PARAMETER]="$C" [INDEX]=${!INDEX} \
         [SUBINDEX]=${!SUBINDEX} [VALUE]="" [SHORT]=1;
-    parseopt.match "${C}" $(parseopt.get $PO_STATE SHORT) || return 1;
+    parseopt.match "${C}" $(parseopt.get $PO_STATE SHORT) || return 71;
     let $SUBINDEX++;
     if (( $SUBINDEX == length )); then
       eval $RCRD_PARAMETER[SIZE]=1;
-      parseopt.match "${C}" $(parseopt.get $PO_STATE SETTINGS) && {
-        parseopt.set $RCRD_PARAMETER [VALUE]="$2" [SIZE]=2;
-        let $INDEX++;
-        true
-      } 
+#      parseopt.match "${C}" $(parseopt.get $PO_STATE SETTINGS) && {
+#        parseopt.set $RCRD_PARAMETER [VALUE]="$2" [SIZE]=2;
+#        let $INDEX++;
+#        true
+#      } 
       let $INDEX++;
       let $SUBINDEX=0;
     else
       eval $RCRD_PARAMETER[SIZE]=0;
       parseopt.match "${C}" $(parseopt.get $PO_STATE SETTINGS) && {
-        echo error: ${BASH_LINENO}
-        return 1;
+        parseopt.match "$C" $(parseopt.get $PO_STATE HAS_DEFAULT) || return 72;
       } 
     fi;
     return 0;
@@ -169,8 +167,7 @@ function parseopt() {
     parseopt.set $RCRD_PARAMETER [BRANCH]=8 \
       [PARAMETER]="$C" [INDEX]=${!INDEX} \
         [SUBINDEX]=${!SUBINDEX} [VALUE]="" [SHORT]=1;
-    parseopt.match "${C}" $(parseopt.get $PO_STATE SHORT) || return 1;
-    parseopt.match "${C}" $(parseopt.get $PO_STATE SETTINGS) || return 1;
+    parseopt.match "${C}" $(parseopt.get $PO_STATE SHORT) || return 81;
     let $SUBINDEX++;
     if (( $SUBINDEX == length )); then
       eval $RCRD_PARAMETER[VALUE]="$2";
@@ -184,8 +181,7 @@ function parseopt() {
     else
       eval $RCRD_PARAMETER[SIZE]=0;
       parseopt.match "${C}" $(parseopt.get $PO_STATE SETTINGS) && {
-        echo error: ${BASH_LINENO}
-        return 1;
+        parseopt.match "$C" $(parseopt.get $PO_STATE HAS_DEFAULT) || return 82;
       } 
     fi;
     return 0;
@@ -196,11 +192,10 @@ function parseopt() {
     local match=${BASH_REMATCH[1]};
     local -i length=${#match};
     local C=${match:${!SUBINDEX}:1};
-    parseopt.set $RCRD_PARAMETER [BRANCH]=1 \
+    parseopt.set $RCRD_PARAMETER [BRANCH]=9 \
       [PARAMETER]="$C" [INDEX]=${!INDEX} \
         [SUBINDEX]=${!SUBINDEX} [VALUE]="" [SHORT]=1;
-    parseopt.match "${C}" $(parseopt.get $PO_STATE SHORT) || return 1;
-    parseopt.match "${C}" $(parseopt.get $PO_STATE SETTINGS) || return 1;
+    parseopt.match "${C}" $(parseopt.get $PO_STATE SHORT) || return 91;
     let $SUBINDEX++;
     if (( $SUBINDEX == length )); then
       eval $RCRD_PARAMETER[VALUE]="${BASH_REMATCH[2]}";
@@ -213,8 +208,7 @@ function parseopt() {
     else
       eval $RCRD_PARAMETER[SIZE]=0;
       parseopt.match "${C}" $(parseopt.get $PO_STATE SETTINGS) && {
-        echo error: ${BASH_LINENO}
-        return 1;
+        parseopt.match "$C" $(parseopt.get $PO_STATE HAS_DEFAULT) || return 92;
       } 
     fi;
     return 0;
@@ -224,16 +218,16 @@ function parseopt() {
 
 }
 
-
 # end option parsing utilities section
 
 (( PARSE_OPT_DEBUG )) && {
 
   declare -A CONFIG;
 
-  parseopt.set CONFIG [LONG]="file"
-  parseopt.set CONFIG [SHORT]="f r w x";
-  parseopt.set CONFIG [SETTINGS]="file f"
+  parseopt.set CONFIG [LONG]="get-theatre help"
+  parseopt.set CONFIG [SHORT]="H T L Q R d e f h i l l p q z";
+  parseopt.set CONFIG [SETTINGS]="H Q T e i l q z"
+  parseopt.set CONFIG [HAS_DEFAULT]="H T"
 
   parseopt.begin CONFIG;
 
