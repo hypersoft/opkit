@@ -7,9 +7,7 @@ function opkit.match() {
   return 1;
 }
 
-function opkit.keys() {
-  eval echo \${!$1[@]}\;;
-}
+function opkit.keys() { eval echo \${!$1[@]}\;; }
 
 function opkit.set() {
   local destination=$1 assignment; shift;
@@ -22,18 +20,12 @@ function opkit.set() {
 
 function opkit.get() {
   local source=$1 name; shift;
-  for name; do
-    eval echo \${$source[$name]}\;;
-  done;
+  for name; do eval echo \${$source[$name]}\;; done;
 }
 
-function opkit.content() {
-  eval echo \${$1[@]};
-}
+function opkit.content() { eval echo \${$1[@]}; }
 
-function opkit.begin() {
-  opkit.set $1 [INDEX]=1 [SUBINDEX]=0;
-}
+function opkit.begin() { opkit.set $1 [INDEX]=1 [SUBINDEX]=0; }
 
 function opkit.dump() { 
 
@@ -133,8 +125,7 @@ function opkit.parse() {
     let $SUBINDEX++;
     if (( $SUBINDEX == length )); then
       opkit.set $RCRD_PARAMETER [SIZE]=1;
-      let $INDEX++;
-      let $SUBINDEX=0;
+      let $INDEX++ $SUBINDEX=0;
     else
       opkit.set $RCRD_PARAMETER [SIZE]=0;
       opkit.match "${C}" $(opkit.get $OK_STATE SETTINGS) && {
@@ -160,8 +151,7 @@ function opkit.parse() {
         opkit.set $RCRD_PARAMETER [VALUE]="$2" [SIZE]=2;
         let $INDEX++;
       } 
-      let $INDEX++;
-      let $SUBINDEX=0;
+      let $INDEX++ $SUBINDEX=0;
     else
       opkit.set $RCRD_PARAMETER [SIZE]=0;
       opkit.match "${C}" $(opkit.get $OK_STATE SETTINGS) && {
@@ -186,8 +176,7 @@ function opkit.parse() {
       opkit.match "${C}" $(opkit.get $OK_STATE SETTINGS) && {
         opkit.set $RCRD_PARAMETER [VALUE]="${!VALUE}";
       } 
-      let $INDEX++;
-      let $SUBINDEX=0;
+      let $INDEX++ $SUBINDEX=0;
     else
       opkit.set $RCRD_PARAMETER [SIZE]=0;
       opkit.match "${C}" $(opkit.get $OK_STATE SETTINGS) && {
