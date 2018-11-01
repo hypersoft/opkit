@@ -20,7 +20,7 @@ function opkit.set() {
 
 function opkit.get() {
   local source=$1 name; shift;
-  for name; do eval echo \${$source[$name]}\;; done;
+  for name; do eval echo \"\${$source[$name]}\"\;; done;
 }
 
 function opkit.content() { eval echo \${$1[@]}; }
