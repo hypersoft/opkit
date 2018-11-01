@@ -58,7 +58,7 @@ function parseopt() {
   local INDEX=$PO_STATE[INDEX] SUBINDEX=$PO_STATE[SUBINDEX];
   local PARAMETER=BASH_REMATCH[1] VALUE=BASH_REMATCH[2]
     
-  parseopt.set $RCRD_PARAMETER [BRANCH]=0 [INDEX]=${!INDEX};
+  parseopt.set $RCRD_PARAMETER [BRANCH]=0 [INDEX]=${!INDEX} [INPUT]="$1";
 
   # 1 test for long option
   [[ "$1" =~ ^--([a-zA-Z-]*[a-zA-Z])$ ]] && {
