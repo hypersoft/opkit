@@ -144,7 +144,7 @@ function opkit.parse() {
     opkit.match "${C}" $(opkit.get $OK_STATE SHORT) || return 71;
     let $SUBINDEX++;
     if (( $SUBINDEX == length )); then
-      eval $RCRD_PARAMETER[SIZE]=1;
+      opkit.set $RCRD_PARAMETER [SIZE]=1;
 #      opkit.match "${C}" $(opkit.get $OK_STATE SETTINGS) && {
 #        opkit.set $RCRD_PARAMETER [VALUE]="$2" [SIZE]=2;
 #        let $INDEX++;
@@ -153,7 +153,7 @@ function opkit.parse() {
       let $INDEX++;
       let $SUBINDEX=0;
     else
-      eval $RCRD_PARAMETER[SIZE]=0;
+      opkit.set $RCRD_PARAMETER [SIZE]=0;
       opkit.match "${C}" $(opkit.get $OK_STATE SETTINGS) && {
         opkit.match "$C" $(opkit.get $OK_STATE HAS_DEFAULT) || return 72;
       } 
@@ -171,8 +171,8 @@ function opkit.parse() {
     opkit.match "${C}" $(opkit.get $OK_STATE SHORT) || return 81;
     let $SUBINDEX++;
     if (( $SUBINDEX == length )); then
-      eval $RCRD_PARAMETER[VALUE]="$2";
-      eval $RCRD_PARAMETER[SIZE]=2;
+      opkit.set $RCRD_PARAMETER [VALUE]="$2";
+      opkit.set $RCRD_PARAMETER [SIZE]=2;
       opkit.match "${C}" $(opkit.get $OK_STATE SETTINGS) && {
         opkit.set $RCRD_PARAMETER [VALUE]="$2" [SIZE]=2;
         let $INDEX++;
@@ -180,7 +180,7 @@ function opkit.parse() {
       let $INDEX++;
       let $SUBINDEX=0;
     else
-      eval $RCRD_PARAMETER[SIZE]=0;
+      opkit.set $RCRD_PARAMETER [SIZE]=0;
       opkit.match "${C}" $(opkit.get $OK_STATE SETTINGS) && {
         opkit.match "$C" $(opkit.get $OK_STATE HAS_DEFAULT) || return 82;
       } 
@@ -198,15 +198,15 @@ function opkit.parse() {
     opkit.match "${C}" $(opkit.get $OK_STATE SHORT) || return 91;
     let $SUBINDEX++;
     if (( $SUBINDEX == length )); then
-      eval $RCRD_PARAMETER[VALUE]="${BASH_REMATCH[2]}";
-      eval $RCRD_PARAMETER[SIZE]=1;
+      opkit.set $RCRD_PARAMETER [VALUE]="${BASH_REMATCH[2]}";
+      opkit.set $RCRD_PARAMETER [SIZE]=1;
       opkit.match "${C}" $(opkit.get $OK_STATE SETTINGS) && {
         opkit.set $RCRD_PARAMETER [VALUE]="${!VALUE}";
       } 
       let $INDEX++;
       let $SUBINDEX=0;
     else
-      eval $RCRD_PARAMETER[SIZE]=0;
+      opkit.set $RCRD_PARAMETER [SIZE]=0;
       opkit.match "${C}" $(opkit.get $OK_STATE SETTINGS) && {
         opkit.match "$C" $(opkit.get $OK_STATE HAS_DEFAULT) || return 92;
       } 
