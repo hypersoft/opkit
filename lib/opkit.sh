@@ -25,7 +25,7 @@ function opkit.get() {
 
 function opkit.content() { eval echo \${$1[@]}; }
 
-function opkit.begin() { opkit.set $1 [INDEX]=1 [SUBINDEX]=0; }
+function opkit.begin() { opkit.set $1 [POINT]=1 [SUBPOINT]=0; }
 
 function opkit.dump() { 
 
@@ -47,17 +47,17 @@ function opkit.parse() {
 
   local OK_STATE=$1 RCRD_PARAMETER=$2; shift 2;
 
-  local INDEX=$OK_STATE[INDEX] SUBINDEX=$OK_STATE[SUBINDEX];
+  local POINT=$OK_STATE[POINT] SUBPOINT=$OK_STATE[SUBPOINT];
   local PARAMETER=BASH_REMATCH[1] VALUE=BASH_REMATCH[2]
     
-  opkit.set $RCRD_PARAMETER [BRANCH]=0 [INDEX]=${!INDEX} \
-    [INPUT]="$1" [SUBINDEX]=0 [VALUE]='' [SHORT]=0 [SIZE]=1;
+  opkit.set $RCRD_PARAMETER [BRANCH]=0 [POINT]=${!POINT} \
+    [INPUT]="$1" [SUBPOINT]=0 [VALUE]='' [SHORT]=0 [SIZE]=1;
 
   # 1 test for long option
   [[ "$1" =~ ^--([a-zA-Z-]*[a-zA-Z])$ ]] && {
     opkit.set $RCRD_PARAMETER [BRANCH]=1 [PARAMETER]="${!PARAMETER}";
     opkit.match "${!PARAMETER}" $(opkit.get $OK_STATE LONG) || return 11;
-    let $INDEX++;
+    let $POINT++;
     return 0;
   }
 
@@ -68,7 +68,7 @@ function opkit.parse() {
     opkit.match "${!PARAMETER}" $(opkit.get $OK_STATE LONG) || return 21;
     opkit.match "${!PARAMETER}" $(opkit.get $OK_STATE SETTINGS) || \
       return 22;
-    let $INDEX+=2;
+    let $POINT+=2;
     return 0;
   }
 
@@ -79,7 +79,7 @@ function opkit.parse() {
     opkit.match "${!PARAMETER}" $(opkit.get $OK_STATE LONG) || return 31;
     opkit.match "${!PARAMETER}" $(opkit.get $OK_STATE SETTINGS) || \
       return 32;
-    let $INDEX++;
+    let $POINT++;
     return 0;
   }
 
@@ -88,7 +88,7 @@ function opkit.parse() {
     opkit.set $RCRD_PARAMETER [BRANCH]=4 [PARAMETER]="${!PARAMETER}" \
       [SHORT]=1;
     opkit.match "${!PARAMETER}" $(opkit.get $OK_STATE SHORT) || return 41;
-    let $INDEX++;
+    let $POINT++;
     return 0;
   }
 
@@ -99,7 +99,7 @@ function opkit.parse() {
     opkit.match "${!PARAMETER}" $(opkit.get $OK_STATE SHORT) || return 51;
     opkit.match "${!PARAMETER}" $(opkit.get $OK_STATE SETTINGS) || \
       return 52;
-    let $INDEX+=2;
+    let $POINT+=2;
     return 0;
   }
 
@@ -110,7 +110,7 @@ function opkit.parse() {
     opkit.match "${!PARAMETER}" $(opkit.get $OK_STATE SHORT) || return 61;
     opkit.match "${!PARAMETER}" $(opkit.get $OK_STATE SETTINGS) || \
       return 62;
-    let $INDEX++;
+    let $POINT++;
     return 0;
   }
   
@@ -118,14 +118,14 @@ function opkit.parse() {
   [[ "$1" =~ ^-([a-zA-Z]+)$ ]] && {
     local match=${BASH_REMATCH[1]};
     local -i length=${#match};
-    local C=${match:${!SUBINDEX}:1};
-    opkit.set $RCRD_PARAMETER [BRANCH]=7 [PARAMETER]="$C" [INDEX]=${!INDEX} \
-      [SUBINDEX]=${!SUBINDEX} [SHORT]=1;
+    local C=${match:${!SUBPOINT}:1};
+    opkit.set $RCRD_PARAMETER [BRANCH]=7 [PARAMETER]="$C" [POINT]=${!POINT} \
+      [SUBPOINT]=${!SUBPOINT} [SHORT]=1;
     opkit.match "${C}" $(opkit.get $OK_STATE SHORT) || return 71;
-    let $SUBINDEX++;
-    if (( $SUBINDEX == length )); then
+    let $SUBPOINT++;
+    if (( $SUBPOINT == length )); then
       opkit.set $RCRD_PARAMETER [SIZE]=1;
-      let $INDEX++ $SUBINDEX=0;
+      let $POINT++ $SUBPOINT=0;
     else
       opkit.set $RCRD_PARAMETER [SIZE]=0;
       opkit.match "${C}" $(opkit.get $OK_STATE SETTINGS) && {
@@ -139,19 +139,19 @@ function opkit.parse() {
   [[ "$1" =~ ^-([a-zA-Z]+):$ ]] && {
     local match=${BASH_REMATCH[1]};
     local -i length=${#match};
-    local C=${match:${!SUBINDEX}:1};
-    opkit.set $RCRD_PARAMETER [BRANCH]=8 [PARAMETER]="$C" [INDEX]=${!INDEX} \
-      [SUBINDEX]=${!SUBINDEX} [SHORT]=1;
+    local C=${match:${!SUBPOINT}:1};
+    opkit.set $RCRD_PARAMETER [BRANCH]=8 [PARAMETER]="$C" [POINT]=${!POINT} \
+      [SUBPOINT]=${!SUBPOINT} [SHORT]=1;
     opkit.match "${C}" $(opkit.get $OK_STATE SHORT) || return 81;
-    let $SUBINDEX++;
-    if (( $SUBINDEX == length )); then
+    let $SUBPOINT++;
+    if (( $SUBPOINT == length )); then
       opkit.set $RCRD_PARAMETER [VALUE]="$2";
       opkit.set $RCRD_PARAMETER [SIZE]=2;
       opkit.match "${C}" $(opkit.get $OK_STATE SETTINGS) && {
         opkit.set $RCRD_PARAMETER [VALUE]="$2" [SIZE]=2;
-        let $INDEX++;
+        let $POINT++;
       } 
-      let $INDEX++ $SUBINDEX=0;
+      let $POINT++ $SUBPOINT=0;
     else
       opkit.set $RCRD_PARAMETER [SIZE]=0;
       opkit.match "${C}" $(opkit.get $OK_STATE SETTINGS) && {
@@ -165,18 +165,18 @@ function opkit.parse() {
   [[ "$1" =~ ^-([a-zA-Z]+)[:=](.+)$ ]] && {
     local match=${BASH_REMATCH[1]};
     local -i length=${#match};
-    local C=${match:${!SUBINDEX}:1};
-    opkit.set $RCRD_PARAMETER [BRANCH]=9 [PARAMETER]="$C" [INDEX]=${!INDEX} \
-      [SUBINDEX]=${!SUBINDEX} [SHORT]=1;
+    local C=${match:${!SUBPOINT}:1};
+    opkit.set $RCRD_PARAMETER [BRANCH]=9 [PARAMETER]="$C" [POINT]=${!POINT} \
+      [SUBPOINT]=${!SUBPOINT} [SHORT]=1;
     opkit.match "${C}" $(opkit.get $OK_STATE SHORT) || return 91;
-    let $SUBINDEX++;
-    if (( $SUBINDEX == length )); then
+    let $SUBPOINT++;
+    if (( $SUBPOINT == length )); then
       opkit.set $RCRD_PARAMETER [VALUE]="${BASH_REMATCH[2]}";
       opkit.set $RCRD_PARAMETER [SIZE]=1;
       opkit.match "${C}" $(opkit.get $OK_STATE SETTINGS) && {
         opkit.set $RCRD_PARAMETER [VALUE]="${!VALUE}";
       } 
-      let $INDEX++ $SUBINDEX=0;
+      let $POINT++ $SUBPOINT=0;
     else
       opkit.set $RCRD_PARAMETER [SIZE]=0;
       opkit.match "${C}" $(opkit.get $OK_STATE SETTINGS) && {
@@ -214,7 +214,7 @@ function opkit.parse() {
   while (( $# )); do
     declare -A parse;
     opkit.parse CONFIG parse "$@" || {
-      echo "error: parameter #${parse[INDEX]} didn't parse";
+      echo "error: parameter #${parse[POINT]} didn't parse";
       opkit.dump parse;
       exit 1;
     }
