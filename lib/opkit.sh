@@ -53,10 +53,6 @@ function opkit.parse() {
   # the remaining parameters are parsed. the number of items parsed are
   # returned in 2[SIZE].
 
-  # the sections on first order methods which are commented out, parse the
-  # parameter as an option with a value regardless of assignment operators.
-  # they are not desirable features for the maintainer.
-  
   local OK_STATE=$1 RCRD_PARAMETER=$2; shift 2;
 
   local INDEX=$OK_STATE[INDEX] SUBINDEX=$OK_STATE[SUBINDEX];
@@ -69,10 +65,6 @@ function opkit.parse() {
   [[ "$1" =~ ^--([a-zA-Z-]*[a-zA-Z])$ ]] && {
     opkit.set $RCRD_PARAMETER [BRANCH]=1 [PARAMETER]="${!PARAMETER}";
     opkit.match "${!PARAMETER}" $(opkit.get $OK_STATE LONG) || return 11;
-#    opkit.match "${!PARAMETER}" $(opkit.get $OK_STATE SETTINGS) && {
-#      opkit.set $RCRD_PARAMETER [VALUE]="$2" [SIZE]=2;
-#      let $INDEX++;
-#    };
     let $INDEX++;
     return 0;
   }
@@ -104,10 +96,6 @@ function opkit.parse() {
     opkit.set $RCRD_PARAMETER [BRANCH]=4 [PARAMETER]="${!PARAMETER}" \
       [SHORT]=1;
     opkit.match "${!PARAMETER}" $(opkit.get $OK_STATE SHORT) || return 41;
-#    opkit.match "${!PARAMETER}" $(opkit.get $OK_STATE SETTINGS) && {
-#      opkit.set $RCRD_PARAMETER [VALUE]="$2" [SIZE]=2;
-#      let $INDEX++;
-#    };
     let $INDEX++;
     return 0;
   }
@@ -145,11 +133,6 @@ function opkit.parse() {
     let $SUBINDEX++;
     if (( $SUBINDEX == length )); then
       opkit.set $RCRD_PARAMETER [SIZE]=1;
-#      opkit.match "${C}" $(opkit.get $OK_STATE SETTINGS) && {
-#        opkit.set $RCRD_PARAMETER [VALUE]="$2" [SIZE]=2;
-#        let $INDEX++;
-#        true
-#      } 
       let $INDEX++;
       let $SUBINDEX=0;
     else
