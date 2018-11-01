@@ -222,6 +222,10 @@ function parseopt() {
 
 (( PO_DEBUG )) && {
 
+  # todo: error codes for too few options
+  # todo: make branch zero direct match, [taking primary match priority over all processing]
+  # and branch 10 failed to parse.
+  
   declare -A CONFIG;
 
   parseopt.set CONFIG [LONG]="get-theatre help"
