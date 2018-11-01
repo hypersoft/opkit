@@ -223,8 +223,9 @@ function opkit.parse() {
 (( OK_DEBUG )) && {
 
   # todo: error codes for too few options
-  # todo: make branch zero direct match, [taking primary match priority over all processing]
-  # and branch 10 failed to parse.
+  # todo: make branch zero literal match, [taking primary match priority over all processing]
+  # and branch 10 regular expression match
+  # and branch 11 failed to parse.
   # add the plus/minus status and trigger
   
   declare -A CONFIG;
