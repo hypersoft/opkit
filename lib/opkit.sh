@@ -10,10 +10,10 @@ function opkit.match() {
 function opkit.keys() { eval echo \${!$1[@]}\;; }
 
 function opkit.set() {
-  local destination=$1 assignment; shift;
-  for assignment; do
-    local key="${assignment/=*/}";
-    local value="${assignment/*=/}"
+  local destination=$1 source; shift;
+  for source; do
+    local key="${source/=*/}";
+    local value="${source/*=/}"
     printf -v ${destination}$key %s "$value"
   done;
 }
@@ -204,7 +204,7 @@ function opkit.parse() {
   opkit.set CONFIG [SHORT]="H T L Q R d e f h i l l p q z";
   opkit.set CONFIG [SETTINGS]="H Q T e i l q z"
   
-  # options that have a default can be specified with or without assignment
+  # options that have a default can be specified with or without source
   # operators. an option listed here has no effect if it is not listed in
   # CONFIG[SETTINGS]
   opkit.set CONFIG [HAS_DEFAULT]="H T"
