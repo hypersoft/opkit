@@ -185,9 +185,7 @@ function opkit.parse() {
     fi;
     return 0;
   }
-  
   return 1;
-
 }
 
 # end option parsing utilities section
