@@ -68,8 +68,8 @@ void param_debug_print_parameter (ParameterData * result)
   printf("type: %s\n", param_get_parameter_type_string(result->type));
   if (result->branch) printf("branch: %i\n", result->branch);
   printf("atom: %i\n", result->atom);
-  if (result->atomPart)
-    printf("atom-part: %i\n", result->atomPart);
+  if (result->subatom)
+    printf("atom-part: %i\n", result->subatom);
   if (result->atomSpan) printf("atom-span: %i\n", result->atomSpan);
   printf("source: %s\n", result->source);
   if (result->type == PRMTR_TYPE_LONG) {
@@ -202,9 +202,9 @@ bool param_parse_next_parameter (ParameterParserState * state, ParameterData * r
   if ((shortDash || shortPlus) && ! equals && ! fullColon && length > 2) {
     result->type = (shortDash) ? PRMTR_TYPE_SHORT_DASH : PRMTR_TYPE_SHORT_PLUS;
     result->branch = 7;
-    result->atomPart = ++state->subatomSelector;
-    result->shortParameter = result->source[result->atomPart];
-    if (result->atomPart == finalSubPoint) {
+    result->subatom = ++state->subatomSelector;
+    result->shortParameter = result->source[result->subatom];
+    if (result->subatom == finalSubPoint) {
       result->atomSpan = 1;
       state->atomSelector++;
       state->subatomSelector = 0;
@@ -219,9 +219,9 @@ bool param_parse_next_parameter (ParameterParserState * state, ParameterData * r
     --finalSubPoint;
     result->type = (shortDash) ? PRMTR_TYPE_SHORT_DASH : PRMTR_TYPE_SHORT_PLUS;
     result->branch = 8;
-    result->atomPart = ++state->subatomSelector;
-    result->shortParameter = result->source[result->atomPart];
-    if (result->atomPart == finalSubPoint) {
+    result->subatom = ++state->subatomSelector;
+    result->shortParameter = result->source[result->subatom];
+    if (result->subatom == finalSubPoint) {
       state->atomSelector++;
       if (state->atomSelector == state->atomCount) {
         result->atomSpan = 1;
@@ -243,9 +243,9 @@ bool param_parse_next_parameter (ParameterParserState * state, ParameterData * r
     finalSubPoint = (size_t) (equals - result->source) - 1;
     result->type = (shortDash) ? PRMTR_TYPE_SHORT_DASH : PRMTR_TYPE_SHORT_PLUS;
     result->branch = 9;
-    result->atomPart = ++state->subatomSelector;
-    result->shortParameter = result->source[result->atomPart];
-    if (result->atomPart == finalSubPoint) {
+    result->subatom = ++state->subatomSelector;
+    result->shortParameter = result->source[result->subatom];
+    if (result->subatom == finalSubPoint) {
       result->atomSpan = 1;
       state->atomSelector++;
       result->value = equals + 1;

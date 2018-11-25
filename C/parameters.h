@@ -53,7 +53,7 @@ typedef struct {
 
 typedef struct {
   ParameterType type;
-  int branch, atom, atomPart, atomSpan;
+  int branch, atom, subatom, atomSpan;
   char * longParameter;
   char shortParameter;
   char * source, * value;

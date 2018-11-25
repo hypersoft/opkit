@@ -12,7 +12,7 @@ expert knowledge of all parameters that it will parse, thusly requiring heavy
 configuration and expert knowledge on the part of the API users.
 
 CPPS requires no configuration, you just load your vectors and begin parsing,
-right away. If the parser parses a parameter your application doesn't support,
+right away. If the parser parses a parameter your application does not support,
 you are responsible for notifying the user and responding accordingly. 
 
 CPPS's method of parameter parsing is suitable for all application profiles.
@@ -49,7 +49,7 @@ the user: "Stop doing that!". And if an application wants switches and data,
 without the assignment operators \[:=], its simply a matter of parsing the next
 parameter after detecting the correct switch.
 
-CPPS takes care of the hard work involved in tokenization of switches and data.
+CPPS takes care of the hard work involved in the parsing of switches and data.
 
   1. If a parameter has data associated by assignment operation, that data will be returned to the caller with the switch specification on-demand.
 
@@ -92,7 +92,7 @@ parameter type can be one of:
   * short-dash
   * short-plus
 
-The void type, is reserved for all raw-data (not tokenized thusly: void), and
+The void type, is reserved for all raw-data (not parsed thusly: void), and
 the other types are here assumed to be self-explanatory.
 
 There are two C structures which an application coder must familiarize themselves
@@ -109,7 +109,7 @@ sub position within the source for compound parameter items.
 To use the API, you simply allocate the foregoing structures and pass the pointers
 to those structures through the API.
 
-Here is some sample code written in the C programming langauge, which is used
+Here is some sample code written in the C programming language, which is used
 to debug the API:
 
 ```
@@ -124,7 +124,8 @@ int main(int argc, char * argv[]) {
 	ParameterData parameter;
 	param_parse_next_parameter(&state, &parameter);
 	param_debug_print_parameter(&parameter);
-	if (parameter.atomPart) {
+  if (parameter.longParameter) free(parameter.longParameter);
+	if (parameter.subatom) {
 		while (param_parse_next_parameter(&state, &parameter)) {
 			param_debug_print_parameter(&parameter);
 			puts("");
@@ -139,18 +140,13 @@ any data that has been assigned to it. If the first parameter is a compound swit
 it will iterate through each switch in the set and report what was parsed on
 the standard error handle.
 
-Note: this sample application does not free longOption strings. Long option
-strings must be freed by the caller when the data is no longer being used
-by an application.
-
-
 #### API Terminology
 
-atom-table = array of pointers
+atom-table = array of parameter (string) pointers
 
-atom = index/offset in table
+atom = index/offset in atom-table
 
-subatom/atomPart = index/offset of character in string-data of atom-table
+subatom = index/offset of character in atom-table (argv\[atom]\[subatom])
 
 fault = error/exception
 
@@ -163,11 +159,10 @@ PRMTR = parameter
 
 That's all for this document. If you need any further help, or direction, try
 asking a question on StackOverflow. There are many knowledgeable coders who can
-be helpful with debugging you or your code if they are equally "simple enough".
-And this code is simple enough for any C coder who can write a program from
-scratch, but don't be fooled by its simplicity. Simple in this
-context merely means versatile/adaptable and free of things which are
-non-essential.
+be helpful with debugging you or your code. This code is simple enough for any C
+coder who can write a program from scratch; but don't be fooled by its
+simplicity. Simple in this context merely means versatile/adaptable and free of
+gadgets which are non-essential.
 
 See: [elementary](https://www.google.com/search?q=define+elementary) for an
 example of "simple".
