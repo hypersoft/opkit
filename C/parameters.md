@@ -81,8 +81,7 @@ In order to support application coders there are two more API calls which are
 for debugging purposes.
 
 The first API call is `param_debug_print_parameter` which will print a complete 
-report on the standard error handle about what was parsed from a previous call
-to `param_parse_next_parameter`.
+report on what was parsed from a previous call to `param_parse_next_parameter`.
 
 The second API call is `param_get_parameter_type_string`, which will retrieve a
 string pointer that uniquely identifies what the type of parameter parsed is. A
