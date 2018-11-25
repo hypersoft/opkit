@@ -118,19 +118,20 @@ to debug the API:
 
 #include "parameters.h"
 
-int main(int argc, char * argv[]) {
-	ParameterParserState state;
-	param_begin_parameter_parsing(&state, argc, argv);
-	ParameterData parameter;
-	param_parse_next_parameter(&state, &parameter);
-	param_debug_print_parameter(&parameter);
+int main(int argc, char * argv[])
+{
+  ParameterParserState state;
+  param_begin_parameter_parsing(&state, argc, argv);
+  ParameterData parameter;
+  param_parse_next_parameter(&state, &parameter);
+  param_debug_print_parameter(&parameter);
   if (parameter.longParameter) free(parameter.longParameter);
-	if (parameter.subatom) {
-		while (param_parse_next_parameter(&state, &parameter)) {
-			param_debug_print_parameter(&parameter);
-			puts("");
-		}
-	}
+  if (parameter.subatom) {
+    while (param_parse_next_parameter(&state, &parameter)) {
+      param_debug_print_parameter(&parameter);
+      puts("");
+    }
+  }
   exit(0);
 }
 ```
