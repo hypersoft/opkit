@@ -136,9 +136,13 @@ int main(int argc, char * argv[]) {
 ```
 
 Simply call the application and it will parse the first parameter given along with
-any data that has been assigned to it. If the first parameter is compound switch,
+any data that has been assigned to it. If the first parameter is a compound switch,
 it will iterate through each switch in the set and report what was parsed on
 the standard error handle.
+
+Note: this sample application does not free longOption strings. Long option
+strings must be freed by the caller when the data is no longer being used
+by an application.
 
 
 #### API Terminology
@@ -170,4 +174,4 @@ See: [elementary](https://www.google.com/search?q=define+elementary) for an
 example of "simple".
 
 "UNIX is very simple, it just needs a genius to understand its simplicity."
--- Denis Ritchie (founding father of C programming)
+-- Dennis Ritchie (founding father of C programming)
