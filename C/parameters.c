@@ -1,103 +1,71 @@
+/*
+
+Copyright (C) Triston-Jerard: Taylor; November: 25th; 2018
+
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification,
+are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this
+   list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+ */
+
 #include "parameters.h"
 
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
 
-/*
- * a legal parameter name may not contain this RE class [:=]; because those 
- * bytes are for specifying data joined indirectly or directly (respectively) to
- * the parameter name given.
- * 
- * legal examples (with data):
- * 
- *  --file: FILE_NAME
- *  --file=FILE_NAME
- *  -f: FILE_NAME
- *  +f: FILE_NAME
- *  -f=FILE_NAME
- *  +f=FILE_NAME
- *	-xyzf: FILE_NAME
- *	+xyzf: FILE_NAME
- *  -xyzf=FILE_NAME
- *  +xyzf=FILE_NAME
- *
- * legal examples (no data/manual-data)
- * 
- *	--word-*
- *  [the asterisk in the following examples represents any character]
- *	-*...
- *  +*...
- * 
- * if a the data can't be parsed, it will be returned to you in the source field
- * of the ParameterData, and the atomSelector of the ParserState will be updated
- * anyway. So, if you have options which take data, you can parse the data yourself,
- * if the RE class [:=] is not specified, by simply parsing the next field.
- * in any case, every parameter will be parsed, but not every parameter will
- * successfully parsed by the parser branch codes.
- * 
- * NOTE: if the parameter type is long, you MUST free the longParameter string,
- * IF you are finished using it, otherwise, you can keep the data and never free
- * it, but any memory leak detection you may be using will report a false
- * positive on exit. You should make a habit of freeing the data when it is no
- * longer needed.
- * 
- * NOTE: this code does not perform any validation of what is parsed. It simply
- * tokenizes command line parameters according to this
- * specification[ you just read]. If you need further tokenization or validation,
- * you will have to provide the methods, and this code will provide you with all 
- * of the parameter-data.
- */
+static const char * DASH_DASH = "--";
+static const char * DASH = "-";
+static const char * PLUS = "+";
 
-// example usage
-
-/*
-#include <stdio.h>
-#include <stdlib.h>
-
-#include "parameters.h"
-
-int main(int argc, char * argv[]) {
-  ParameterParserState state;
-  param_begin_parameter_parsing(&state, argc, argv);
-  ParameterData parameter;
-  param_parse_next_parameter(&state, &parameter);
-  param_debug_print_parameter(&parameter);
-  if (parameter.atomPart) {
-    while (param_parse_next_parameter(&state, &parameter)) {
-      param_debug_print_parameter(&parameter);
-      puts("");
-    }
-  }
-  exit(0);
-}
- */
-
-static bool string_starts_with(char * a, const char * b) {
+static bool string_starts_with (char * a, const char * b)
+{
   int val = memcmp(a, b, strlen(b));
   return val == 0;
 }
 
-static char * string_get_first_character_match(char * a, char b) {
+static char * string_get_first_character_match (char * a, char b)
+{
   return strchr(a, b);
 }
 
-static const char * get_parameter_type_string(ParameterType type) {
+const char * param_get_parameter_type_string (ParameterType type)
+{
   switch (type) {
-  case PRMTR_TYPE_VOID: return "void";
-  case PRMTR_TYPE_LONG: return "long";
-  case PRMTR_TYPE_SHORT_DASH: return "short-dash";
-  case PRMTR_TYPE_SHORT_PLUS: return "short-plus";
+    case PRMTR_TYPE_VOID: return "void";
+    case PRMTR_TYPE_LONG: return "long";
+    case PRMTR_TYPE_SHORT_DASH: return "short-dash";
+    case PRMTR_TYPE_SHORT_PLUS: return "short-plus";
   }
 }
 
-void param_debug_print_parameter(ParameterData * result) {
+void param_debug_print_parameter (ParameterData * result)
+{
   if (result == NULL) {
     fprintf(stderr, "critical: parameter-debug-fault: no parameter data was provided by the caller\n");
     abort();
   }
 
-  printf("type: %s\n", get_parameter_type_string(result->type));
+  printf("type: %s\n", param_get_parameter_type_string(result->type));
   if (result->branch) printf("branch: %i\n", result->branch);
   printf("atom: %i\n", result->atom);
   if (result->atomPart)
@@ -112,18 +80,16 @@ void param_debug_print_parameter(ParameterData * result) {
 
 }
 
-void param_begin_parameter_parsing(ParameterParserState * state, int count, char * parameter[]) {
+void param_begin_parameter_parsing (ParameterParserState * state, int count, char * parameter[])
+{
   memset(state, 0, sizeof (ParameterParserState));
   state->atomCount = count;
   state->atomTable = parameter;
   state->atomSelector = 1; // because we don't parse parameter[0] == PROGRAM_PATH
 }
 
-static const char * DASH_DASH = "--";
-static const char * DASH = "-";
-static const char * PLUS = "+";
-
-bool param_parse_next_parameter(ParameterParserState * state, ParameterData * result) {
+bool param_parse_next_parameter (ParameterParserState * state, ParameterData * result)
+{
 
   if (state == NULL) {
     fprintf(stderr, "critical: parameter-parsing-fault: no parser state was provided by the caller\n");
@@ -131,6 +97,8 @@ bool param_parse_next_parameter(ParameterParserState * state, ParameterData * re
   }
 
   state->faultCode = 0;
+  memset(result, 0, sizeof (ParameterData));
+  result->atom = state->atomSelector;
 
   if (result == NULL) {
     state->faultCode = PRMTR_NO_PARAMETER_DATA;
@@ -141,8 +109,6 @@ bool param_parse_next_parameter(ParameterParserState * state, ParameterData * re
     state->faultCode = PRMTR_NO_PARAMETERS_AVAILABLE;
     return false;
   }
-
-  memset(result, 0, sizeof (ParameterData));
 
   result->source = state->atomTable[state->atomSelector];
 
@@ -160,7 +126,6 @@ bool param_parse_next_parameter(ParameterParserState * state, ParameterData * re
   if (longDash && ! fullColon && ! equals && length > 2) {
     result->type = PRMTR_TYPE_LONG;
     result->branch = 1;
-    result->atom = state->atomSelector;
     result->atomSpan = 1;
     result->longParameter = strndup(result->source + 2, length - 2);
     state->atomSelector++;
@@ -171,7 +136,6 @@ bool param_parse_next_parameter(ParameterParserState * state, ParameterData * re
   if (longDash && fullColon && length > 3) {
     result->type = PRMTR_TYPE_LONG;
     result->branch = 2;
-    result->atom = state->atomSelector;
     result->atomSpan = 2;
     result->longParameter = strndup(result->source + 2, length - 3);
     state->atomSelector++;
@@ -188,7 +152,6 @@ bool param_parse_next_parameter(ParameterParserState * state, ParameterData * re
   if (longDash && equals && equals - result->source > 2) {
     result->type = PRMTR_TYPE_LONG;
     result->branch = 3;
-    result->atom = state->atomSelector;
     result->atomSpan = 1;
     result->longParameter = strndup(result->source + 2, equals - (result->source + 2));
     result->value = ++equals;
@@ -200,7 +163,6 @@ bool param_parse_next_parameter(ParameterParserState * state, ParameterData * re
   if ((shortDash || shortPlus) && !fullColon && !equals && length == 2) {
     result->type = (shortDash) ? PRMTR_TYPE_SHORT_DASH : PRMTR_TYPE_SHORT_PLUS;
     result->branch = 4;
-    result->atom = state->atomSelector;
     result->atomSpan = 1;
     // if parameter is '-' then zero will fall through as character
     result->shortParameter = result->source[1];
@@ -212,7 +174,6 @@ bool param_parse_next_parameter(ParameterParserState * state, ParameterData * re
   if ((shortDash || shortPlus) && fullColon && length == 3) {
     result->type = (shortDash) ? PRMTR_TYPE_SHORT_DASH : PRMTR_TYPE_SHORT_PLUS;
     result->branch = 5;
-    result->atom = state->atomSelector;
     result->atomSpan = 2;
     result->shortParameter = result->source[1];
     state->atomSelector++;
@@ -229,7 +190,6 @@ bool param_parse_next_parameter(ParameterParserState * state, ParameterData * re
   if ((shortDash || shortPlus) && equals == result->source + 2) {
     result->type = (shortDash) ? PRMTR_TYPE_SHORT_DASH : PRMTR_TYPE_SHORT_PLUS;
     result->branch = 6;
-    result->atom = state->atomSelector;
     result->atomSpan = 1;
     result->shortParameter = result->source[1];
     result->value = ++equals;
@@ -241,7 +201,6 @@ bool param_parse_next_parameter(ParameterParserState * state, ParameterData * re
   if ((shortDash || shortPlus) && ! equals && ! fullColon && length > 2) {
     result->type = (shortDash) ? PRMTR_TYPE_SHORT_DASH : PRMTR_TYPE_SHORT_PLUS;
     result->branch = 7;
-    result->atom = state->atomSelector;
     result->atomPart = ++state->subatomSelector;
     result->shortParameter = result->source[result->atomPart];
     if (result->atomPart == finalSubPoint) {
@@ -259,7 +218,6 @@ bool param_parse_next_parameter(ParameterParserState * state, ParameterData * re
     --finalSubPoint;
     result->type = (shortDash) ? PRMTR_TYPE_SHORT_DASH : PRMTR_TYPE_SHORT_PLUS;
     result->branch = 8;
-    result->atom = state->atomSelector;
     result->atomPart = ++state->subatomSelector;
     result->shortParameter = result->source[result->atomPart];
     if (result->atomPart == finalSubPoint) {
@@ -284,7 +242,6 @@ bool param_parse_next_parameter(ParameterParserState * state, ParameterData * re
     finalSubPoint = (size_t) (equals - result->source) - 1;
     result->type = (shortDash) ? PRMTR_TYPE_SHORT_DASH : PRMTR_TYPE_SHORT_PLUS;
     result->branch = 9;
-    result->atom = state->atomSelector;
     result->atomPart = ++state->subatomSelector;
     result->shortParameter = result->source[result->atomPart];
     if (result->atomPart == finalSubPoint) {
@@ -303,4 +260,3 @@ bool param_parse_next_parameter(ParameterParserState * state, ParameterData * re
   return false;
 
 }
-
