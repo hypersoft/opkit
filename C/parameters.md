@@ -138,8 +138,7 @@ int main(int argc, char * argv[])
 
 Simply call the application and it will parse the first parameter given along with
 any data that has been assigned to it. If the first parameter is a compound switch,
-it will iterate through each switch in the set and report what was parsed on
-the standard error handle.
+it will iterate through each switch in the set and report what was parsed.
 
 #### API Terminology
 
