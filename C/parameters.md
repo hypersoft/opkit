@@ -1,8 +1,8 @@
-### The Hypersoft-Systems: U.-S.-A.: C Parameter Parsing Suite (C.-P.-P.-S)
+### The Hypersoft-Systems: U.-S.-A.: C Parameter Parsing Suite (C.-P.-P.-S.)
 
 The C Parameter Parsing Suite (CPPS) provides applications with a simple parameter
 parsing backend which is capable of parsing any command-line-parameter(s) given
-by users including void/non-existent parameters.
+by users including non-existent parameters.
 
 The parsing suite is a "dumb", parser which means it has no knowledge of the
 content that it is parsing. It only transforms the parameters given to tokens,
@@ -59,11 +59,11 @@ CPPS takes care of the hard work involved in the parsing of switches and data.
 
   4. If an application executes an incorrect call, the user will be notified, and the application will be aborted.
 
-CPPS Neatly keeps tabs on all data. While using CPPS your application will always
+CPPS neatly keeps tabs on all data. While using CPPS your application will always
 have the knowledge needed to notify the user that parameter number "X" is not valid.
-If the the invalid parameter of "X" is in a compound set, your application will
+If the invalid parameter of "X" is in a compound set, your application will
 also have the meta-data to explain the relationship of "X" and "Y" to the user,
-such as: "parameter #4 at sub-position #3 is an illegal option \[CAUSE]".
+such as: "parameter #4 at sub-position #3 is an illegal option; \[ADD-CAUSE-HERE]".
 
 #### Coding With CPPS
 
@@ -77,14 +77,14 @@ supplied parser state.
 The second API call is `param_parse_next_parameter` which is consecutively called
 by an application until no further processing is required.
 
-In order to support application coders there are two more API calls which are
+In order to support application coders, there are two more API calls which are
 for debugging purposes.
 
 The first API call is `param_debug_print_parameter` which will print a complete 
 report on what was parsed from a previous call to `param_parse_next_parameter`.
 
 The second API call is `param_get_parameter_type_string`, which will retrieve a
-string pointer that uniquely identifies what the type of parameter parsed is. A
+string pointer that uniquely identifies the type of the parsed parameter. A
 parameter type can be one of:
 
   * void
@@ -105,6 +105,25 @@ and current position within the token stream (commonly known as "argv").
 The second is `ParameterData` which contains all of the relevant data about a
 parsed (or unparsed) parameter, such as position, value, source (context) and
 sub position within the source for compound parameter items.
+
+Additionally, `ParameterData` has a field called "branch" and this field signifies,
+in great technical detail, what kind of parameter you have on hand after a call
+to `param_parse_next_parameter`. There are 10 logic branches in the `param_parse_next_parameter`
+procedure, and the branch field signifies which code branch the parameter was
+parsed or not parsed by.
+
+```
+  0. Root - Not parsed
+  1. Long Parameter
+  2. Long Parameter with ':' external data specification
+  3. Long Parameter with '=' direct data specification
+  4. Short Parameter
+  5. Short Parameter with ':' external data specification
+  6. Short Parameter with '=' direct data specification
+  7. Compound Short Parameter
+  8. Compound Short Parameter with ':' external data specification
+  9. Compound Short Parameter with '=' direct data specification
+```
 
 To use the API, you simply allocate the foregoing structures and pass the pointers
 to those structures through the API.
