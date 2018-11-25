@@ -97,13 +97,14 @@ bool param_parse_next_parameter (ParameterParserState * state, ParameterData * r
   }
 
   state->faultCode = 0;
-  memset(result, 0, sizeof (ParameterData));
-  result->atom = state->atomSelector;
 
   if (result == NULL) {
     state->faultCode = PRMTR_NO_PARAMETER_DATA;
     return false;
   }
+
+  memset(result, 0, sizeof (ParameterData));
+  result->atom = state->atomSelector;
 
   if (state->atomSelector == state->atomCount) {
     state->faultCode = PRMTR_NO_PARAMETERS_AVAILABLE;
